@@ -31,6 +31,10 @@ export default {
     if (/(\.ya?ml)/.test(fileExtension)) {
       try {
         let fileContent = fs.readFileSync(uri, 'utf8');
+        let tries = 0;
+        while(fileContent.includes("!vault") && tries++ < 5) {
+          fileContent = fileContent.replace(/\n[^\n!]*!vault[^!:]*($|\n)/g, "\n");
+        }
         return Promise.resolve(yaml.safeLoad(fileContent)).then((yamlObject) => {
           if (recursiveYaml && !isNullOrUndefined(yamlObject)) {
             return this.extraireVarsFiles(yamlObject, uri).then((subYamlObjects) => {
