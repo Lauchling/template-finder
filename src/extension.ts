@@ -73,6 +73,13 @@ export function activate(context: vscode.ExtensionContext) {
       });
       context.subscriptions.push(disposableDeactivationCommand);
     }
+    if (commands.find((command) => command === 'extension.reload') === undefined) {
+      let disposableReloadCommand = vscode.commands.registerCommand('extension.reload', () => {
+        vscode.window.showInformationMessage('Reload triggered');
+        triggerUpdate();
+      });
+      context.subscriptions.push(disposableReloadCommand);
+    }
   });
 
   //#endregion
