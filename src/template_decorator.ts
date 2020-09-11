@@ -19,8 +19,7 @@ export default {
     );
 
     const lineSeparator = config.get<Array<boolean>>('display.showLineSeparators')
-      ? `| ${'-'.repeat(25)} |
-`
+      ? `| ${'-'.repeat(25)} |` + '\n'
       : '';
 
     this.externalVariables = config
@@ -100,23 +99,19 @@ const noneMatchingTemplateDecorationRenderOptions: vscode.DecorationRenderOption
 
 function createHoverMessage(lineSeparator: string, data: Template) {
   let hoverMessage = new vscode.MarkdownString(
-    `| ${'&nbsp;'.repeat(10)} Values ${'&nbsp;'.repeat(10)} |
-| ${'-'.repeat(25)} |
-`);
+    `| ${'&nbsp;'.repeat(10)} Values ${'&nbsp;'.repeat(10)} |` + '\n' +
+    `| ${'-'.repeat(25)} |` + '\n');
 
   if (data.unhandledJinjaOptions.length > 0) {
     hoverMessage.appendMarkdown(
-      `| ${data.unhandledJinjaOptions.join('\n')} |
-`);
+      `| ${data.unhandledJinjaOptions.join('\n')} |` + '\n');
   }
 
   if (data.defaultValue) {
     hoverMessage.appendMarkdown(
       lineSeparator +
-        `| **default** |
-| ${beautifyValue(data.defaultValue)} |
-`
-    );
+        `| **default** |` + '\n' +
+        `| ${beautifyValue(data.defaultValue)} |` + '\n');
   }
 
   if (data.isExternal) {
@@ -125,10 +120,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
     if (data.objectMatch) {
       hoverMessage.appendMarkdown(
         lineSeparator +
-          `| **current context** |
-| ${beautifyValue(data.objectMatch)} |
-`
-      );
+          `| **current context** |` + '\n' +
+          `| ${beautifyValue(data.objectMatch)} |` + '\n');
     }
 
     Object.keys(data.variableMatches).forEach((file) => {
@@ -136,10 +129,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
       let command = 'templateFinder.goto';
       hoverMessage.appendMarkdown(
         lineSeparator +
-          `| **[${shortLocation}](command:${command}?${encodeURIComponent(JSON.stringify({ file, key: data.name }))} "Go To Definition")** |
-| ${beautifyValue(data.variableMatches[file])} |
-`
-      );
+          `| **[${shortLocation}](command:${command}?${encodeURIComponent(JSON.stringify({ file, key: data.name }))} "Go To Definition")** |` + '\n' +
+          `| ${beautifyValue(data.variableMatches[file])} |` + '\n');
     });
   }
   vscode.window.showInformationMessage(hoverMessage.value);
