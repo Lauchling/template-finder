@@ -20,7 +20,7 @@ export default {
 
     const lineSeparator = config.get<Array<boolean>>('display.showLineSeparators')
       ? `| ${'-'.repeat(25)} |
-      `
+`
       : '';
 
     this.externalVariables = config
@@ -40,7 +40,7 @@ export default {
         decoration = {
           range: new vscode.Range(startPos, endPos),
           hoverMessage: hoverMessage,
-        };
+          };
         if (Object.keys(data.variableMatches).length === maxMatch || data.objectMatch || data.isExternal) {
           allMatchingDecorators.push(decoration);
         } else {
@@ -101,23 +101,21 @@ const noneMatchingTemplateDecorationRenderOptions: vscode.DecorationRenderOption
 function createHoverMessage(lineSeparator: string, data: Template) {
   let hoverMessage = new vscode.MarkdownString(
     `| ${'&nbsp;'.repeat(10)} Values ${'&nbsp;'.repeat(10)} |
-     | ${'-'.repeat(25)} |
-      `
-  );
+| ${'-'.repeat(25)} |
+`);
 
   if (data.unhandledJinjaOptions.length > 0) {
     hoverMessage.appendMarkdown(
       `| ${data.unhandledJinjaOptions.join('\n')} |
-      `
-    );
+`);
   }
 
   if (data.defaultValue) {
     hoverMessage.appendMarkdown(
       lineSeparator +
         `| **default** |
-        | ${beautifyValue(data.defaultValue)} |
-        `
+| ${beautifyValue(data.defaultValue)} |
+`
     );
   }
 
@@ -128,8 +126,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
       hoverMessage.appendMarkdown(
         lineSeparator +
           `| **current context** |
-            | ${beautifyValue(data.objectMatch)} |
-            `
+| ${beautifyValue(data.objectMatch)} |
+`
       );
     }
 
@@ -138,15 +136,13 @@ function createHoverMessage(lineSeparator: string, data: Template) {
       let command = 'templateFinder.goto';
       hoverMessage.appendMarkdown(
         lineSeparator +
-          `| **[${shortLocation}](command:${command}?${encodeURIComponent(
-            JSON.stringify({ file, key: data.name })
-          )} "Go To Definition")** |
-            | ${beautifyValue(data.variableMatches[file])} |
-            `
+          `| **[${shortLocation}](command:${command}?${encodeURIComponent(JSON.stringify({ file, key: data.name }))} "Go To Definition")** |
+| ${beautifyValue(data.variableMatches[file])} |
+`
       );
     });
   }
-
+  vscode.window.showInformationMessage(hoverMessage.value);
   hoverMessage.isTrusted = true;
   return hoverMessage;
 }
