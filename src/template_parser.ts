@@ -13,10 +13,8 @@ const defaultRegex = /default\((.+?)\)/;
 export default {
   parseVariablesforTemplates: function (variables: any) {
     try {
-      let replaces = 1, iterations = 0;
-      console.log("a");
-       while (replaces > 0) {
-        console.log(`Starting iteration ${iterations++}`);
+      let replaces = 1;
+      while (replaces > 0) {
         replaces = 0;
         for (let file in variables) {
           for (let variable in variables[file]) {
@@ -28,13 +26,11 @@ export default {
               console.log(`Found ${Object.keys(values).length} matches for ${templateVarName} in variable ${variable}`);
               if (Object.keys(values).length > 0) {
                 replaces++;
-                 var firstMatch = `${Object.values(values)[0]}`;
 
-                let targetStars = (variables[file][variable].match(/\*/g) || []).length, sourceStars = (firstMatch.match(/\*/g) || []).length;
-                let formatter = targetStars > 2 || sourceStars > 2 ? "" : "**";
+                let formatter = getFormatterChars(variables[file][variable], match[0], `${Object.values(values)[0]}`);
 
-                variables[file][variable] = variables[file][variable].replace(match[0], `${formatter}${firstMatch}${formatter}`);
-                console.log(`New Value: ${variables[file][variable]}`);
+                variables[file][variable] = variables[file][variable].replace(match[0], `${formatter}${Object.values(values)[0]}${formatter}`);
+                console.log(`New Value for variable ${variable}: ${variables[file][variable]}`);
               }
 
             }
@@ -42,10 +38,8 @@ export default {
           }
         }
         console.log(`Ended iteration with ${replaces} matches.\n`);
-       }
-       console.log(`Ended with ${iterations} iterations`);
-    }catch(e){
-      console.log(e);
+      }
+    } catch (e) {
       console.error(e);
     }
   },
@@ -112,6 +106,16 @@ export interface Template {
   objectMatch?: any;
   unhandledJinjaOptions: string[];
   isExternal?: boolean;
+}
+
+function getFormatterChars(variableContent: string, oldValue: string, newValue: string) {
+  let stringIndex = variableContent.indexOf(oldValue);
+  let varBefore = variableContent.substring(0, stringIndex);
+
+  if ((varBefore.match(/\*\*/g) || []).length % 2 === 0 && (newValue.match(/\*\*/g) || []).length === 0) {
+    return "**";
+  }
+  return "";
 }
 
 function createTemplateFromVariableMatch(match: RegExpExecArray, variables: any, currentObject: any) {
