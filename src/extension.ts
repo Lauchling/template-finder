@@ -145,6 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
         return Promise.all(uris.map((uri) => updateVariablesFromFile(uri, variables)));
       })
       .then(() => {
+        Parser.parseVariablesforTemplates(variables);
         updateTemplates();
       });
   }

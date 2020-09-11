@@ -11,6 +11,44 @@ const jinjaForLoopRegex = /{% for (.+) in (.+) %}/g;
 const defaultRegex = /default\((.+?)\)/;
 
 export default {
+  parseVariablesforTemplates: function (variables: any) {
+    try {
+      let replaces = 1, iterations = 0;
+      console.log("a");
+       while (replaces > 0) {
+        console.log(`Starting iteration ${iterations++}`);
+        replaces = 0;
+        for (let file in variables) {
+          for (let variable in variables[file]) {
+            let match;
+
+            while (match = jinjaVariableRegex.exec(variables[file][variable])) {
+              let templateVarName = match[1];
+              let values = findTemplateInVariables(templateVarName, variables);
+              console.log(`Found ${Object.keys(values).length} matches for ${templateVarName} in variable ${variable}`);
+              if (Object.keys(values).length > 0) {
+                replaces++;
+                 var firstMatch = `${Object.values(values)[0]}`;
+
+                let targetStars = (variables[file][variable].match(/\*/g) || []).length, sourceStars = (firstMatch.match(/\*/g) || []).length;
+                let formatter = targetStars > 2 || sourceStars > 2 ? "" : "**";
+
+                variables[file][variable] = variables[file][variable].replace(match[0], `${formatter}${firstMatch}${formatter}`);
+                console.log(`New Value: ${variables[file][variable]}`);
+              }
+
+            }
+
+          }
+        }
+        console.log(`Ended iteration with ${replaces} matches.\n`);
+       }
+       console.log(`Ended with ${iterations} iterations`);
+    }catch(e){
+      console.log(e);
+      console.error(e);
+    }
+  },
   parseTextForTemplates: function (text: string, variables: any, currentObject?: any): Array<Template> {
     const localVariables = JSON.parse(JSON.stringify(variables));
     let templates: Array<Template> = new Array();
@@ -32,7 +70,7 @@ export default {
       try {
         let fileContent = fs.readFileSync(uri, 'utf8');
         let tries = 0;
-        while(fileContent.includes("!vault") && tries++ < 5) {
+        while (fileContent.includes("!vault") && tries++ < 5) {
           fileContent = fileContent.replace(/\n[^\n!]*!vault[^!:]*($|\n)/g, "\n");
         }
         return Promise.resolve(yaml.safeLoad(fileContent)).then((yamlObject) => {
