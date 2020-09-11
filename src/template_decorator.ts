@@ -133,7 +133,6 @@ function createHoverMessage(lineSeparator: string, data: Template) {
           `| ${beautifyValue(data.variableMatches[file])} |` + '\n');
     });
   }
-  vscode.window.showInformationMessage(hoverMessage.value);
   hoverMessage.isTrusted = true;
   return hoverMessage;
 }
