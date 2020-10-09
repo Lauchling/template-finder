@@ -12,30 +12,35 @@ const defaultRegex = /default\((.+?)\)/;
 
 export default {
   parseVariablesforTemplates: function (variables: any) {
-    try {
-      let replaces;
-      do {
-        replaces = 0;
-        for (let file in variables) {
-          for (let variable in variables[file]) {
-            let match;
-            let variableValue = variables[file][variable];
 
-            while (match = jinjaVariableRegex.exec(variableValue)) {
-              let templateVarName = match[1];
-              let values = findTemplateInVariables(templateVarName, variables);
+    for (let file in variables) {
+      for (let variable in variables[file]) {
+        let match;
+        let variableValue = variables[file][variable];
+        if (typeof (variableValue) !== "string") { continue; }
 
-              if (Object.keys(values).length > 0) {
-                replaces++;
-                variables[file][variable] = variableValue.replace(match[0], highlightVariable(variableValue, match[0], `${Object.values(values)[0]}`));
-              }
+        let replaced = true;
+        jinjaVariableRegex.lastIndex = 0;
+        while (jinjaVariableRegex.test(variableValue) && replaced) {
+          replaced = false;
+          jinjaVariableRegex.lastIndex = 0;
+
+          while (match = jinjaVariableRegex.exec(variableValue)) {
+            let templateVarName = match[1];
+            let values = findTemplateInVariables(templateVarName, variables);
+
+            if (Object.keys(values).length > 0) {
+              variables[file][variable] = variableValue.replace(match[0], highlightVariable(variableValue, match[0], `${Object.values(values)[0]}`));
+              replaced = true;
             }
           }
+          variableValue = variables[file][variable];
+          jinjaVariableRegex.lastIndex = 0;
         }
-      } while (replaces > 0);
-    } catch (e) {
-      console.error(e);
+      }
+
     }
+
   },
   parseTextForTemplates: function (text: string, variables: any, currentObject?: any): Array<Template> {
     const localVariables = JSON.parse(JSON.stringify(variables));

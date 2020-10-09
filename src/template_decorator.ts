@@ -39,7 +39,7 @@ export default {
         decoration = {
           range: new vscode.Range(startPos, endPos),
           hoverMessage: hoverMessage,
-          };
+        };
         if (Object.keys(data.variableMatches).length === maxMatch || data.objectMatch || data.isExternal) {
           allMatchingDecorators.push(decoration);
         } else {
@@ -110,8 +110,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
   if (data.defaultValue) {
     hoverMessage.appendMarkdown(
       lineSeparator +
-        `| **default** |` + '\n' +
-        `| ${beautifyValue(data.defaultValue)} |` + '\n');
+      `| **default** |` + '\n' +
+      `| ${beautifyValue(data.defaultValue)} |` + '\n');
   }
 
   if (data.isExternal) {
@@ -120,8 +120,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
     if (data.objectMatch) {
       hoverMessage.appendMarkdown(
         lineSeparator +
-          `| **current context** |` + '\n' +
-          `| ${beautifyValue(data.objectMatch)} |` + '\n');
+        `| **current context** |` + '\n' +
+        `| ${beautifyValue(data.objectMatch)} |` + '\n');
     }
 
     Object.keys(data.variableMatches).forEach((file) => {
@@ -129,8 +129,8 @@ function createHoverMessage(lineSeparator: string, data: Template) {
       let command = 'templateFinder.goto';
       hoverMessage.appendMarkdown(
         lineSeparator +
-          `| **[${shortLocation}](command:${command}?${encodeURIComponent(JSON.stringify({ file, key: data.name }))} "Go To Definition")** |` + '\n' +
-          `| ${beautifyValue(data.variableMatches[file])} |` + '\n');
+        `| **[${shortLocation}](command:${command}?${encodeURIComponent(JSON.stringify({ file, key: data.name }))} "Go To Definition")** |` + '\n' +
+        `| ${beautifyValue(data.variableMatches[file])} |` + '\n');
     });
   }
   hoverMessage.isTrusted = true;
