@@ -21,22 +21,35 @@ export default {
 
         let replaced = true;
         jinjaVariableRegex.lastIndex = 0;
+
         while (jinjaVariableRegex.test(variableValue) && replaced) {
           replaced = false;
           jinjaVariableRegex.lastIndex = 0;
-
+value_loop:
           while (match = jinjaVariableRegex.exec(variableValue)) {
             let templateVarName = match[1];
             let values = findTemplateInVariables(templateVarName, variables);
+            let valueIndex = 0;
+
+            // Search for a value that does not include itself, else abort
+            while (String(Object.values(values)[valueIndex]).includes(match[0])) {
+              if (Object.values(values).length > valueIndex + 1) {
+                valueIndex++;
+              } else {
+                break value_loop;
+              }
+            }
 
             if (Object.keys(values).length > 0) {
-              variables[file][variable] = variableValue.replace(match[0], highlightVariable(variableValue, match[0], `${Object.values(values)[0]}`));
+              variables[file][variable] = variableValue.replace(match[0], highlightVariable(variableValue, match[0], `${Object.values(values)[valueIndex]}`));
               replaced = true;
             }
           }
           variableValue = variables[file][variable];
           jinjaVariableRegex.lastIndex = 0;
+
         }
+        console.log(`Done`);
       }
 
     }
