@@ -76,6 +76,7 @@ value_loop:
       try {
         let fileContent = fs.readFileSync(uri, 'utf8');
         fileContent = fileContent.replace(/[^\n!]*!vault[^!#:]*($|\n)/g, "\n");
+        fileContent = fileContent.replace(/[^\n!]*!unsafe[^!#:]*($|\n)/g, "\n");
         return Promise.resolve(yaml.safeLoad(fileContent)).then((yamlObject) => {
           if (recursiveYaml && !isNullOrUndefined(yamlObject)) {
             return this.extraireVarsFiles(yamlObject, uri).then((subYamlObjects) => {
